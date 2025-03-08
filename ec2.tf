@@ -1,13 +1,13 @@
 provider "aws" {
-  region     = "us-west-2"
+  region = "us-west-2"
 }
 
 resource "aws_instance" "example" {
-  ami             = "encrypted_ami_id"
-  instance_type   = "t2.micro"
-  key_name        = "example_keypair"
-  subnet_id       = "example_subnet_id"
-  vpc_security_group_ids = ["example_security_group_id"]
+  ami                         = "encrypted_ami_id"
+  instance_type               = "t2.micro"
+  key_name                    = "example_keypair"
+  subnet_id                   = "example_subnet_id"
+  vpc_security_group_ids      = ["example_security_group_id"]
   associate_public_ip_address = false
 
   iam_instance_profile {
@@ -15,16 +15,19 @@ resource "aws_instance" "example" {
   }
 
   root_block_device {
-    encrypted     = true
+    encrypted = true
   }
 
   launch_template {
-    id      = aws_launch_template.example.id
+    id = aws_launch_template.example.id
   }
 
   metadata_options {
     http_endpoint = "enabled"
     http_tokens   = "required"
+  }
+  tags = {
+    git_file = "terraform/aws/ec2.tf"
   }
 }
 
@@ -42,14 +45,14 @@ resource "aws_launch_template" "example" {
   root_block_device {
     volume_type = "gp2"
     volume_size = 10
-    encrypted = false
+    encrypted   = false
   }
 
   ebs_block_device {
     device_name = "/dev/xvdf"
     volume_type = "gp2"
     volume_size = 10
-    encrypted = true
+    encrypted   = true
   }
 
   iam_instance_profile {
@@ -61,12 +64,15 @@ resource "aws_launch_template" "example" {
     http_tokens   = "required"
   }
 
-  image_id = "encrypted_ami_id"
+  image_id      = "encrypted_ami_id"
   instance_type = "t2.micro"
+  tags = {
+    git_file = "terraform/aws/ec2.tf"
+  }
 }
 
 resource "aws_db_instance" "default" {
-#checkov:skip=CKV_AWS_129: No need for logs
+  #checkov:skip=CKV_AWS_129: No need for logs
   allocated_storage          = 10
   db_name                    = "mydb"
   engine                     = "mysql"
@@ -80,4 +86,7 @@ resource "aws_db_instance" "default" {
   monitoring_interval        = true
   auto_minor_version_upgrade = true
   multi_az                   = true
+  tags = {
+    git_file = "terraform/aws/ec2.tf"
+  }
 }
